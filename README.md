@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 Cost-Aware LLM Support Copilot
+#  Cost-Aware LLM Support Copilot
 
 **A production-grade AI customer support assistant that dynamically routes queries to the cheapest model capable of answering accurately.**
 
