@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SupportCopilot — Cost-Aware AI Support Assistant</title>
+  <meta name="description" content="AI-powered customer support assistant with cost-aware model routing, RAG retrieval, and full observability." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ── App Shell ───────────────────────────────────────────────────────── -->
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <span class="logo-text">SupportCopilot</span>
+      </div>
+      <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12h18M3 6h18M3 18h18"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-view="chat" id="navChat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span>Support Chat</span>
+      </button>
+      <button class="nav-item" data-view="analytics" id="navAnalytics">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        <span>Analytics</span>
+      </button>
+      <button class="nav-item" data-view="evaluation" id="navEval">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+        <span>Evaluation</span>
+      </button>
+      <button class="nav-item" data-view="knowledge" id="navKnowledge">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span>Knowledge Base</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-budget">
+      <div class="budget-header">
+        <span class="budget-label">Daily Budget</span>
+        <span class="budget-value" id="budgetValue">$0.00 / $50</span>
+      </div>
+      <div class="budget-bar">
+        <div class="budget-fill" id="budgetFill" style="width: 0%"></div>
+      </div>
+      <div class="budget-meta" id="budgetMeta">Loading...</div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="api-status" id="apiStatus">
+        <div class="status-dot"></div>
+        <span>Connecting...</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ── VIEW: Chat ────────────────────────────────────────────────── -->
+    <div class="view active" id="viewChat">
+
+      <div class="chat-layout">
+
+        <!-- Chat Panel -->
+        <div class="chat-panel">
+          <div class="chat-header">
+            <div class="chat-header-info">
+              <h1 class="chat-title">Customer Support</h1>
+              <p class="chat-subtitle">Powered by cost-aware AI routing</p>
+            </div>
+            <div class="chat-header-controls">
+              <label class="toggle-label">
+                <input type="checkbox" id="debugMode" />
+                <span class="toggle-switch"></span>
+                <span class="toggle-text">Debug Panel</span>
+              </label>
+              <label class="toggle-label">
+                <input type="checkbox" id="slaMode" />
+                <span class="toggle-switch"></span>
+                <span class="toggle-text">Quality Mode</span>
+              </label>
+              <button class="btn-ghost" id="clearChat" title="Clear conversation">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Scenario Quick-Launch -->
+          <div class="scenario-bar" id="scenarioBar">
+            <span class="scenario-label">Try a demo:</span>
+            <button class="scenario-chip" data-query="What is your return window for unopened electronics?">📦 Return window</button>
+            <button class="scenario-chip" data-query="I was charged twice on order ORD-10001. What do I do?">💳 Double charge</button>
+            <button class="scenario-chip" data-query="My package says delivered but I never received it.">🚚 Missing package</button>
+            <button class="scenario-chip" data-query="Can I return a used laptop after 35 days?">⚠️ Edge case</button>
+            <button class="scenario-chip" data-query="What is your holiday return policy?">🎁 Holiday policy</button>
+          </div>
+
+          <!-- Messages -->
+          <div class="messages-container" id="messages">
+            <div class="welcome-state" id="welcomeState">
+              <div class="welcome-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <h2>How can I help you today?</h2>
+              <p>Ask about returns, refunds, shipping, or your order status. The AI will route your question to the optimal model tier based on complexity and cost.</p>
+            </div>
+          </div>
+
+          <!-- Input -->
+          <div class="chat-input-area">
+            <div class="input-wrapper">
+              <textarea
+                id="chatInput"
+                class="chat-input"
+                placeholder="Type your support question..."
+                rows="1"
+                maxlength="4096"
+              ></textarea>
+              <button class="send-btn" id="sendBtn" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+              </button>
+            </div>
+            <div class="input-meta">
+              <span id="charCount">0 / 4096</span>
+              <span class="model-indicator" id="modelIndicator">
+                <span class="tier-dot tier-balanced"></span>
+                SLA: Balanced
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Debug / Inspector Panel -->
+        <div class="inspector-panel" id="inspectorPanel" style="display:none">
+          <div class="inspector-header">
+            <h3>Debug Inspector</h3>
+            <select id="inspectorTab" class="inspector-select">
+              <option value="routing">Routing Decision</option>
+              <option value="retrieval">Retrieved Chunks</option>
+              <option value="cost">Cost & Tokens</option>
+              <option value="raw">Raw Response</option>
+            </select>
+          </div>
+          <div class="inspector-content" id="inspectorContent">
+            <div class="inspector-empty">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <p>Send a message to inspect routing decisions, retrieved context, and cost breakdown.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VIEW: Analytics ───────────────────────────────────────────── -->
+    <div class="view" id="viewAnalytics">
+      <div class="view-header">
+        <h1>Analytics Dashboard</h1>
+        <p>Real-time cost, latency, and quality metrics</p>
+      </div>
+
+      <div class="analytics-grid">
+        <!-- KPI Cards -->
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="kpi-data">
+            <div class="kpi-value" id="kpiSpend">$0.00</div>
+            <div class="kpi-label">Today's Spend</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="kpi-data">
+            <div class="kpi-value" id="kpiLatency">—</div>
+            <div class="kpi-label">Avg Latency</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-purple">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <div class="kpi-data">
+            <div class="kpi-value" id="kpiCacheHit">—</div>
+            <div class="kpi-label">Cache Hit Rate</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-orange">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <div class="kpi-data">
+            <div class="kpi-value" id="kpiEscalation">—</div>
+            <div class="kpi-label">Escalation Rate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Model Tier Usage -->
+      <div class="analytics-card">
+        <h3 class="analytics-card-title">Model Tier Distribution</h3>
+        <div class="tier-chart">
+          <div class="tier-bar-group">
+            <div class="tier-bar-label">Cheap (Tier A)</div>
+            <div class="tier-bar-track">
+              <div class="tier-bar-fill tier-a" id="tierBarA" style="width:0%"></div>
+            </div>
+            <div class="tier-bar-pct" id="tierPctA">0%</div>
+          </div>
+          <div class="tier-bar-group">
+            <div class="tier-bar-label">Balanced (Tier B)</div>
+            <div class="tier-bar-track">
+              <div class="tier-bar-fill tier-b" id="tierBarB" style="width:0%"></div>
+            </div>
+            <div class="tier-bar-pct" id="tierPctB">0%</div>
+          </div>
+          <div class="tier-bar-group">
+            <div class="tier-bar-label">Premium (Tier C)</div>
+            <div class="tier-bar-track">
+              <div class="tier-bar-fill tier-c" id="tierBarC" style="width:0%"></div>
+            </div>
+            <div class="tier-bar-pct" id="tierPctC">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cost Breakdown Table -->
+      <div class="analytics-card">
+        <h3 class="analytics-card-title">Cost Breakdown by Model (Last 7 Days)</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table" id="costTable">
+            <thead>
+              <tr>
+                <th>Model</th><th>Tier</th><th>Calls</th>
+                <th>Input Tokens</th><th>Output Tokens</th>
+                <th>Total Cost</th><th>Avg Latency</th>
+              </tr>
+            </thead>
+            <tbody id="costTableBody">
+              <tr><td colspan="7" class="table-empty">No data yet. Start a conversation to generate metrics.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Latency -->
+      <div class="analytics-card">
+        <h3 class="analytics-card-title">Latency Percentiles by Tier</h3>
+        <div class="latency-grid" id="latencyGrid">
+          <div class="latency-placeholder">Run conversations to populate latency data.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VIEW: Evaluation ──────────────────────────────────────────── -->
+    <div class="view" id="viewEvaluation">
+      <div class="view-header">
+        <h1>Evaluation Pipeline</h1>
+        <p>Measure groundedness, retrieval quality, and cost-quality tradeoffs</p>
+        <button class="btn-primary" id="runEvalBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run Evaluation
+        </button>
+      </div>
+
+      <div class="eval-metrics-grid">
+        <div class="eval-metric-card">
+          <div class="eval-metric-icon">🎯</div>
+          <div class="eval-metric-value" id="evalGroundedness">—</div>
+          <div class="eval-metric-label">Groundedness Score</div>
+        </div>
+        <div class="eval-metric-card">
+          <div class="eval-metric-icon">🔍</div>
+          <div class="eval-metric-value" id="evalRetrieval">—</div>
+          <div class="eval-metric-label">Retrieval Hit Rate</div>
+        </div>
+        <div class="eval-metric-card">
+          <div class="eval-metric-icon">💰</div>
+          <div class="eval-metric-value" id="evalCost">—</div>
+          <div class="eval-metric-label">Avg Cost / Query</div>
+        </div>
+        <div class="eval-metric-card">
+          <div class="eval-metric-icon">⚡</div>
+          <div class="eval-metric-value" id="evalLatency">—</div>
+          <div class="eval-metric-label">Avg Latency</div>
+        </div>
+      </div>
+
+      <!-- Gold Eval Set Preview -->
+      <div class="analytics-card">
+        <h3 class="analytics-card-title">Gold Evaluation Set (15 Queries)</h3>
+        <div class="eval-queries" id="evalQueries">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Eval Runs History -->
+      <div class="analytics-card">
+        <h3 class="analytics-card-title">Evaluation Run History</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table" id="evalRunsTable">
+            <thead>
+              <tr><th>Run Name</th><th>Samples</th><th>Groundedness</th><th>Avg Cost</th><th>Avg Latency</th><th>Date</th></tr>
+            </thead>
+            <tbody id="evalRunsBody">
+              <tr><td colspan="6" class="table-empty">No evaluation runs yet. Click "Run Evaluation" above.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VIEW: Knowledge Base ──────────────────────────────────────── -->
+    <div class="view" id="viewKnowledge">
+      <div class="view-header">
+        <h1>Knowledge Base</h1>
+        <p>Policy documents, FAQs, and retrieval index management</p>
+        <label class="btn-primary" for="ingestFile" style="cursor:pointer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Ingest Document
+        </label>
+        <input type="file" id="ingestFile" accept=".md,.txt,.pdf" style="display:none" />
+      </div>
+
+      <div class="analytics-card">
+        <h3 class="analytics-card-title">Indexed Documents</h3>
+        <div class="data-table-wrapper">
+          <table class="data-table" id="docsTable">
+            <thead>
+              <tr><th>Title</th><th>Policy Type</th><th>Region</th><th>Version</th><th>Indexed</th></tr>
+            </thead>
+            <tbody id="docsTableBody">
+              <tr><td colspan="5" class="table-empty">No documents indexed. Ingest your first document above.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Routing Logic Explainer -->
+      <div class="analytics-card">
+        <h3 class="analytics-card-title">Cost-Aware Routing Logic</h3>
+        <div class="routing-explainer">
+          <div class="routing-tier">
+            <div class="routing-tier-badge tier-a-badge">Tier A — Cheap</div>
+            <div class="routing-tier-desc">
+              <strong>Model:</strong> GPT-3.5-Turbo<br/>
+              <strong>Used when:</strong> High retrieval confidence (&gt;0.75) + Low complexity + Low risk intent (FAQ, general info)<br/>
+              <strong>Top-K:</strong> 3 chunks · <strong>Max tokens:</strong> 200
+            </div>
+          </div>
+          <div class="routing-tier">
+            <div class="routing-tier-badge tier-b-badge">Tier B — Balanced</div>
+            <div class="routing-tier-desc">
+              <strong>Model:</strong> GPT-4o-mini<br/>
+              <strong>Used when:</strong> Medium risk (returns, shipping, warranty) or moderate complexity<br/>
+              <strong>Top-K:</strong> 4–6 chunks · <strong>Max tokens:</strong> 400
+            </div>
+          </div>
+          <div class="routing-tier">
+            <div class="routing-tier-badge tier-c-badge">Tier C — Premium</div>
+            <div class="routing-tier-desc">
+              <strong>Model:</strong> GPT-4o<br/>
+              <strong>Used when:</strong> High risk (refunds, payment), low retrieval confidence, multi-intent queries, quality SLA mode<br/>
+              <strong>Top-K:</strong> 6–8 chunks · <strong>Max tokens:</strong> 700
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Message Templates -->
+<template id="userMsgTpl">
+  <div class="message user-message">
+    <div class="msg-avatar msg-avatar-user">U</div>
+    <div class="msg-body">
+      <div class="msg-content"></div>
+    </div>
+  </div>
+</template>
+
+<template id="assistantMsgTpl">
+  <div class="message assistant-message">
+    <div class="msg-avatar msg-avatar-ai">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+      </svg>
+    </div>
+    <div class="msg-body">
+      <div class="msg-meta-top">
+        <span class="model-badge" data-tier="balanced">Balanced</span>
+        <span class="confidence-badge" data-band="medium">Medium Confidence</span>
+        <span class="latency-badge"><span class="latency-val">0</span>ms</span>
+        <span class="cost-badge">$<span class="cost-val">0.000000</span></span>
+        <span class="cache-badge" style="display:none">⚡ Cached</span>
+      </div>
+      <div class="msg-content"></div>
+      <div class="citations-block" style="display:none">
+        <div class="citations-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          Sources
+        </div>
+        <div class="citations-list"></div>
+      </div>
+      <div class="escalation-block" style="display:none">
+        <div class="escalation-banner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          Human agent recommended
+        </div>
+      </div>
+      <div class="follow-up-block" style="display:none">
+        <div class="follow-up-banner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span class="follow-up-text"></span>
+        </div>
+      </div>
+      <div class="msg-feedback">
+        <button class="feedback-btn" data-rating="up" title="Helpful">👍</button>
+        <button class="feedback-btn" data-rating="down" title="Not helpful">👎</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="thinkingTpl">
+  <div class="message assistant-message thinking-message" id="thinkingMsg">
+    <div class="msg-avatar msg-avatar-ai">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+      </svg>
+    </div>
+    <div class="msg-body">
+      <div class="thinking-indicator">
+        <div class="thinking-steps" id="thinkingSteps">
+          <div class="thinking-step active" id="step-classify">🔍 Classifying intent...</div>
+          <div class="thinking-step" id="step-route">⚖️ Routing...</div>
+          <div class="thinking-step" id="step-retrieve">📚 Retrieving context...</div>
+          <div class="thinking-step" id="step-generate">✨ Generating answer...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script src="app.js"></script>
+</body>
+</html>

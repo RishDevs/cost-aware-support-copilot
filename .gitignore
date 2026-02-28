@@ -1,0 +1,77 @@
+# ── Python ────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+ENV/
+
+# ── Testing / Coverage ────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ── Environment ───────────────────────────────────────────────────
+.env
+*.env
+.env.local
+.env.*.local
+
+# ── Secrets / Keys ───────────────────────────────────────────────
+*.pem
+*.key
+*.p12
+secrets/
+
+# ── Database ──────────────────────────────────────────────────────
+*.db
+*.sqlite3
+
+# ── Docker ────────────────────────────────────────────────────────
+.dockerignore
+
+# ── Node (if added later) ─────────────────────────────────────────
+node_modules/
+.next/
+.nuxt/
+dist/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+
+# ── OS ────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+
+# ── IDEs ─────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Logs ─────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Data (large files — keep schema only) ────────────────────────
+data/processed/
+data/embeddings/
+
+# ── Notebooks ────────────────────────────────────────────────────
+notebooks/.ipynb_checkpoints/

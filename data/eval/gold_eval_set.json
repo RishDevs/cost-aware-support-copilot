@@ -1,0 +1,276 @@
+[
+    {
+        "id": "eval_001",
+        "query": "What is the return window for electronics?",
+        "intent": "returns",
+        "risk_level": "medium",
+        "difficulty": "easy",
+        "requires_escalation": false,
+        "requires_tool": false,
+        "expected_key_points": [
+            "30 days",
+            "unopened or defective",
+            "electronics category"
+        ],
+        "required_sources": [
+            "returns_policy"
+        ],
+        "ground_truth": "Electronics can be returned within 30 days of delivery, but only if the item is unopened or defective."
+    },
+    {
+        "id": "eval_002",
+        "query": "I was charged twice on the same order. What should I do?",
+        "intent": "payment",
+        "risk_level": "high",
+        "difficulty": "medium",
+        "requires_escalation": false,
+        "requires_tool": false,
+        "expected_key_points": [
+            "check if pending charge",
+            "contact billing",
+            "2 business day resolution",
+            "order number required"
+        ],
+        "required_sources": [
+            "refund_policy"
+        ],
+        "ground_truth": "The customer should first check if the second charge is still pending. If both cleared, contact billing@shopease.com with the order number. Resolution within 2 business days."
+    },
+    {
+        "id": "eval_003",
+        "query": "My package says delivered but I never received it.",
+        "intent": "shipping",
+        "risk_level": "medium",
+        "difficulty": "medium",
+        "requires_escalation": false,
+        "requires_tool": false,
+        "expected_key_points": [
+            "wait 3 business days",
+            "check with neighbors",
+            "contact carrier",
+            "file claim within 30 days"
+        ],
+        "required_sources": [
+            "shipping_policy",
+            "refund_policy"
+        ],
+        "ground_truth": "Customer should wait 3 business days, check with neighbors/reception, contact the carrier, and if unresolved, file a claim with ShopEase within 30 days."
+    },
+    {
+        "id": "eval_004",
+        "query": "Can I return a used laptop after 35 days?",
+        "intent": "returns",
+        "risk_level": "medium",
+        "difficulty": "hard",
+        "requires_escalation": false,
+        "requires_tool": false,
+        "expected_key_points": [
+            "electronics return window is 30 days",
+            "35 days exceeds the return window",
+            "used condition does not qualify",
+            "may need to escalate"
+        ],
+        "required_sources": [
+            "returns_policy"
+        ],
+        "ground_truth": "No. Electronics must be returned within 30 days and in unopened or defective condition. A used laptop at 35 days does not meet either requirement."
+    },
+    {
+        "id": "eval_005",
+        "query": "How long does it take to get my refund after I return something?",
+        "intent": "refunds",
+        "risk_level": "medium",
+        "difficulty": "easy",
+        "requires_escalation": false,
+        "requires_tool": false,
+        "expected_key_points": [
+            "inspection 1-3 business days",
+            "refund 5-10 business days",
+            "total 7-14 business days"
+        ],
+        "required_sources": [
+            "refund_policy"
+        ],
+        "ground_truth": "After the return is received, inspection takes 1-3 business days. The refund is then issued within 5-10 business days. Total: 7-14 business days."
+    },
+    {
+        "id": "eval_006",
+        "query": "Can I return shoes I only wore once?",
+        "intent": "returns",
+        "risk_level": "medium",
+        "difficulty": "medium",
+        "requires_escalation": false,
+        "requires_tool": false,
+        "expected_key_points": [
+            "apparel and shoes 60 day window",
+            "must be unworn with tags",
+            "worn once does not qualify"
+        ],
+        "required_sources": [
+            "returns_policy"
+        ],
+        "ground_truth": "Shoes fall under the apparel category with a 60-day return window, but must be unworn with tags attached. Shoes worn even once are not eligible for return."
+    },
+    {
+        "id": "eval_007",
+        "query": "What is the holiday return policy?",
+        "intent": "returns",
+        "risk_level": "low",
+        "difficulty": "easy",
+        "requires_escalation": false,
+        "requires_tool": false,
+        "expected_key_points": [
+            "purchases November 15 to December 31",
+            "can return until January 31"
+        ],
+        "required_sources": [
+            "returns_policy"
+        ],
+        "ground_truth": "Items purchased between November 15 and December 31 can be returned until January 31 of the following year."
+    },
+    {
+        "id": "eval_008",
+        "query": "I ordered the wrong size shirt. Can I exchange it?",
+        "intent": "returns",
+        "risk_level": "low",
+        "difficulty": "easy",
+        "requires_escalation": false,
+        "requires_tool": false,
+        "expected_key_points": [
+            "60 day return window for apparel",
+            "must be unworn with tags",
+            "initiate via account"
+        ],
+        "required_sources": [
+            "returns_policy"
+        ],
+        "ground_truth": "Yes, apparel can be returned or exchanged within 60 days if unworn and with tags attached. The customer can initiate via Orders > Return an Item."
+    },
+    {
+        "id": "eval_009",
+        "query": "Can you make an exception and let me return this item after 90 days?",
+        "intent": "returns",
+        "risk_level": "medium",
+        "difficulty": "hard",
+        "requires_escalation": true,
+        "requires_tool": false,
+        "expected_key_points": [
+            "cannot guarantee exception",
+            "policy does not cover 90 days",
+            "recommend contacting human agent"
+        ],
+        "required_sources": [
+            "returns_policy"
+        ],
+        "ground_truth": "The standard return window does not extend to 90 days. The copilot should not promise an exception and should escalate to a human agent."
+    },
+    {
+        "id": "eval_010",
+        "query": "Is overnight shipping available? How much does it cost?",
+        "intent": "shipping",
+        "risk_level": "low",
+        "difficulty": "easy",
+        "requires_escalation": false,
+        "requires_tool": false,
+        "expected_key_points": [
+            "overnight shipping available",
+            "$24.99",
+            "next business day delivery"
+        ],
+        "required_sources": [
+            "shipping_policy"
+        ],
+        "ground_truth": "Yes, overnight shipping is available for $24.99 with next business day delivery."
+    },
+    {
+        "id": "eval_011",
+        "query": "My order is taking too long to arrive. It's been 8 business days on standard shipping.",
+        "intent": "shipping",
+        "risk_level": "medium",
+        "difficulty": "medium",
+        "requires_escalation": false,
+        "requires_tool": true,
+        "expected_key_points": [
+            "standard shipping is 5-7 business days",
+            "8 days may indicate delay",
+            "recommend checking tracking",
+            "contact support if no movement"
+        ],
+        "required_sources": [
+            "shipping_policy"
+        ],
+        "ground_truth": "Standard shipping is 5-7 business days. At 8 days, this is slightly outside the window. The customer should check their tracking number and contact support if there is no tracking movement."
+    },
+    {
+        "id": "eval_012",
+        "query": "Will I pay customs fees on my international order?",
+        "intent": "shipping",
+        "risk_level": "low",
+        "difficulty": "medium",
+        "requires_escalation": false,
+        "requires_tool": false,
+        "expected_key_points": [
+            "customs and duties are customer responsibility",
+            "not included in shipping charge",
+            "ShopEase not responsible for customs delays"
+        ],
+        "required_sources": [
+            "shipping_policy"
+        ],
+        "ground_truth": "Yes. Customs, duties, and taxes are the responsibility of the recipient and are not included in the shipping charge."
+    },
+    {
+        "id": "eval_013",
+        "query": "I bought some digital software. Can I get a refund?",
+        "intent": "refunds",
+        "risk_level": "high",
+        "difficulty": "medium",
+        "requires_escalation": false,
+        "requires_tool": false,
+        "expected_key_points": [
+            "digital downloads are non-refundable once accessed",
+            "software licenses are non-returnable"
+        ],
+        "required_sources": [
+            "refund_policy",
+            "returns_policy"
+        ],
+        "ground_truth": "Digital software and downloads are non-refundable once accessed, per ShopEase policy."
+    },
+    {
+        "id": "eval_014",
+        "query": "My refund was supposed to come to my Visa card but it's been 3 weeks.",
+        "intent": "refunds",
+        "risk_level": "high",
+        "difficulty": "hard",
+        "requires_escalation": true,
+        "requires_tool": false,
+        "expected_key_points": [
+            "credit card refunds take 5-10 business days",
+            "3 weeks exceeds expected timeline",
+            "should contact billing or support"
+        ],
+        "required_sources": [
+            "refund_policy"
+        ],
+        "ground_truth": "Credit card refunds should complete within 5-10 business days. 3 weeks is outside the expected window. The customer should contact billing@shopease.com for investigation."
+    },
+    {
+        "id": "eval_015",
+        "query": "If I return part of a bundle, do I get a full refund?",
+        "intent": "refunds",
+        "risk_level": "medium",
+        "difficulty": "hard",
+        "requires_escalation": false,
+        "requires_tool": false,
+        "expected_key_points": [
+            "partial return from bundle",
+            "prorated refund for returned items only",
+            "not full bundle price"
+        ],
+        "required_sources": [
+            "refund_policy"
+        ],
+        "ground_truth": "No. For bundle returns, the refund reflects the prorated value of the returned items, not the full bundle price."
+    }
+]
